@@ -1,43 +1,48 @@
 <!doctype html>
 <html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cycle Tracker</title>
-    <meta name="theme-color" content="#eeffee"/>
-    <meta name="description" content="Securely and confidentially track your menstrual cycle"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-    <meta name="apple-mobile-web-app-title" content="CyTck"/>
-    <link rel="apple-touch-icon" href="icons/wheel.svg"/>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="manifest" href="cycletracker.json" />
-    <link rel="icon" href="icons/circle.svg" />
-  </head>
-  <body>
-    <h1>Period tracker</h1>
-    <form id="new-period">
-      <fieldset>
-        <legend>Enter your period start and end date</legend>
-        <p>
-          <label for="start-date">Start date</label>
-          <input type="date" id="start-date" required />
-        </p>
-        <p>
-          <label for="end-date">End date</label>
-          <input type="date" id="end-date" required />
-        </p>
-      </fieldset>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Cycle Tracker</title>
+  <meta name="theme-color" content="#eeffee" />
+  <meta name="description" content="Securely and confidentially track your menstrual cycle" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="CyTck" />
+  <link rel="apple-touch-icon" href="icons/wheel.svg" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="cycletracker.json" />
+  <link rel="icon" href="icons/circle.svg" />
+</head>
+
+<body>
+  <h1>Period tracker</h1>
+  <form id="new-period">
+    <fieldset>
+      <legend>Enter your period start and end date</legend>
       <p>
-        <button type="submit">Add Period</button>
+        <label for="start-date">Start date</label>
+        <input type="date" id="start-date" required />
       </p>
-    </form>
-    <section id="past-periods"></section>
-    <script src="app.js" defer></script>
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js");
-      }
-    </script>
-  </body>
+      <p>
+        <label for="end-date">End date</label>
+        <input type="date" id="end-date" required />
+      </p>
+    </fieldset>
+    <p>
+      <button type="submit">Add Period</button>
+    </p>
+  </form>
+  <section id="past-periods"></section>
+  <script src="app.js" defer></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/serviceworker.js');
+      });
+    }
+  </script>
+</body>
+
 </html>
