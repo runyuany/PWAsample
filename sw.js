@@ -7,6 +7,7 @@ const ASSETS = [
   '/offline.html',
   '/style.css',
   '/app.js',
+  '/cycletracker.json',
   '/icons/circle.svg',
   '/icons/tire.svg',
   '/icons/wheel.svg',
