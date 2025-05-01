@@ -1,77 +1,92 @@
-// The version of the cache.
-const VERSION = 'v1';
+// This is the service worker with the combined offline experience (Offline page + Offline copy of pages)
 
-// The name of the cache
-const CACHE_NAME = `period-tracker-${VERSION}`;
-
-// The static resources that the app needs to function.
-const APP_STATIC_RESOURCES = [
+const CACHE = 'cycletracker-v1';
+const ASSETS = [
   '/',
   '/index.html',
-  '/app.js',
+  '/offline.html',
   '/style.css',
+  '/app.js',
+  '/icons/circle.svg',
+  '/icons/tire.svg',
   '/icons/wheel.svg',
+  '/favicon.ico'
 ];
 
-// On install, cache the static resources
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js'
+);
+
+// TODO: replace the following with the correct offline fallback page i.e.: const offlineFallbackPage = "offline.html";
+const offlineFallbackPage = 'ToDo-replace-this-name.html';
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE_NAME);
-      cache.addAll(APP_STATIC_RESOURCES);
-    })()
+    caches.open(CACHE).then((cache) => {
+      return cache.addAll(ASSETS);
+    })
   );
 });
 
-// delete old caches on activate
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    (async () => {
-      const names = await caches.keys();
-      await Promise.all(
-        names.map((name) => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
-          }
-        })
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys
+          .filter((key) => key !== CACHE)
+          .map((key) => caches.delete(key))
       );
-      await clients.claim();
-    })()
+    })
   );
 });
 
-// On fetch, intercept server requests
-// and respond with cached responses instead of going to network
+if (workbox.navigationPreload.isSupported()) {
+  workbox.navigationPreload.enable();
+}
+
+workbox.routing.registerRoute(
+  new RegExp('/*'),
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: CACHE,
+  })
+);
+
 self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate') {
-    event.respondWith(caches.match('/'));
-    return;
-  }
-
   event.respondWith(
-    (async () => {
-      const cache = await caches.open(CACHE_NAME);
-      const cachedResponse = await cache.match(event.request);
+    caches.match(event.request)
+      .then((response) => {
+        if (response) {
+          return response; // Return cached version
+        }
+        return fetch(event.request)
+          .then((response) => {
+            // Check if we received a valid response
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
 
-      if (cachedResponse) {
-        return cachedResponse; // Return cached response if found
-      }
+            // Clone the response
+            const responseToCache = response.clone();
 
-      try {
-        // If not in cache, try to fetch from the network
-        const networkResponse = await fetch(event.request);
+            caches.open(CACHE)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
 
-        // Cache the network response for future use
-        cache.put(event.request, networkResponse.clone());
-
-        return networkResponse; // Return the network response
-      } catch (error) {
-        // Network fetch failed
-        return new Response('<h1>Network Error</h1>', {
-          status: 503,
-          headers: { 'Content-Type': 'text/html' },
-        });
-      }
-    })()
+            return response;
+          })
+          .catch(() => {
+            // If the network request fails, return the offline page
+            if (event.request.mode === 'navigate') {
+              return caches.match('/offline.html');
+            }
+          });
+      })
   );
 });
