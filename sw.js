@@ -18,7 +18,7 @@ importScripts(
 );
 
 // TODO: replace the following with the correct offline fallback page i.e.: const offlineFallbackPage = "offline.html";
-const offlineFallbackPage = 'ToDo-replace-this-name.html';
+const offlineFallbackPage = 'offline.html';
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
@@ -46,10 +46,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Enable navigation preload if supported
 if (workbox.navigationPreload.isSupported()) {
   workbox.navigationPreload.enable();
 }
 
+// Use Workbox's StaleWhileRevalidate strategy for all routes
 workbox.routing.registerRoute(
   new RegExp('/*'),
   new workbox.strategies.StaleWhileRevalidate({
