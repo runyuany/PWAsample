@@ -1,20 +1,20 @@
 // The version of the cache.
-const VERSION = "v1";
+const VERSION = 'v1';
 
 // The name of the cache
 const CACHE_NAME = `period-tracker-${VERSION}`;
 
 // The static resources that the app needs to function.
 const APP_STATIC_RESOURCES = [
-  "/",
-  "/index.html",
-  "/app.js",
-  "/style.css",
-  "/icons/wheel.svg",
+  '/',
+  '/index.html',
+  '/app.js',
+  '/style.css',
+  '/icons/wheel.svg',
 ];
 
 // On install, cache the static resources
-self.addEventListener("install", (event) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
@@ -24,7 +24,7 @@ self.addEventListener("install", (event) => {
 });
 
 // delete old caches on activate
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       const names = await caches.keys();
@@ -42,10 +42,10 @@ self.addEventListener("activate", (event) => {
 
 // On fetch, intercept server requests
 // and respond with cached responses instead of going to network
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', (event) => {
   // As a single page app, direct app to always go to cached home page.
-  if (event.request.mode === "navigate") {
-    event.respondWith(caches.match("/"));
+  if (event.request.mode === 'navigate') {
+    event.respondWith(caches.match('/'));
     return;
   }
 
@@ -59,7 +59,7 @@ self.addEventListener("fetch", (event) => {
         return cachedResponse;
       }
       // If resource isn't in the cache, return a 404.
-      return new Response(null, { status: 404 });
+      return new Response('', { status: 404 });
     })()
   );
 });
