@@ -26,6 +26,12 @@ self.addEventListener('message', (event) => {
   }
 });
 
+// Enable navigation preload if supported
+if (workbox.navigationPreload.isSupported()) {
+  workbox.navigationPreload.enable();
+}
+
+// Cache the offline page during install
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => {
@@ -34,6 +40,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Clean up old caches during activate
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -46,14 +53,39 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Enable navigation preload if supported
-if (workbox.navigationPreload.isSupported()) {
-  workbox.navigationPreload.enable();
-}
-
-// Use Workbox's StaleWhileRevalidate strategy for all routes
+// Handle navigation requests with NetworkFirst strategy
 workbox.routing.registerRoute(
-  new RegExp('/*'),
+  ({ request }) => request.mode === 'navigate',
+  new workbox.strategies.NetworkFirst({
+    cacheName: CACHE,
+    plugins: [
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 50,
+      }),
+    ],
+  })
+);
+
+// Handle static assets with CacheFirst strategy
+workbox.routing.registerRoute(
+  ({ request }) => 
+    request.destination === 'style' ||
+    request.destination === 'script' ||
+    request.destination === 'image',
+  new workbox.strategies.CacheFirst({
+    cacheName: CACHE,
+    plugins: [
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+      }),
+    ],
+  })
+);
+
+// Handle other requests with StaleWhileRevalidate strategy
+workbox.routing.registerRoute(
+  ({ url }) => true,
   new workbox.strategies.StaleWhileRevalidate({
     cacheName: CACHE,
   })
