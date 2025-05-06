@@ -6,6 +6,52 @@
   "theme_color": "#eeffee",
   "background_color": "#eeffee",
   "display": "standalone",
+  "shortcuts": [
+    {
+      "name": "Home",
+      "short_name": "Home",
+      "description": "Go to the main period tracking page",
+      "url": "/",
+      "icons": [{ "src": "icons/circle.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "About Us",
+      "short_name": "About",
+      "description": "Learn more about Cycle Tracker",
+      "url": "/about.html",
+      "icons": [{ "src": "icons/tire.svg", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/main.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Main tracking interface of Cycle Tracker"
+    },
+    {
+      "src": "screenshots/main-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Mobile view of the tracking interface"
+    },
+    {
+      "src": "screenshots/about.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "About page with app information"
+    },
+    {
+      "src": "screenshots/about-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Mobile view of the about page"
+    }
+  ],
   "icons": [
     {
       "src": "favicon.ico",

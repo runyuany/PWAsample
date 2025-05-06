@@ -14,10 +14,30 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="cycletracker.json" />
   <link rel="icon" href="icons/circle.svg" />
+  <style>
+    .nav-link {
+      color: #4CAF50;
+      text-decoration: none;
+      margin-left: 1rem;
+    }
+    .nav-link:hover {
+      text-decoration: underline;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Period tracker</h1>
+  <header>
+    <h1>Period tracker</h1>
+    <nav>
+      <a href="about.html" class="nav-link">About Us</a>
+    </nav>
+  </header>
   <form id="new-period">
     <fieldset>
       <legend>Enter your period start and end date</legend>
@@ -36,6 +56,8 @@
   </form>
   <section id="past-periods"></section>
   <script src="app.js" defer></script>
+  <script src="update-handler.js" defer></script>
+  <script src="share-handler.js" defer></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener('load', () => {

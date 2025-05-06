@@ -4,23 +4,30 @@ const CACHE = 'cycletracker-v1';
 const ASSETS = [
   './',
   './index.html',
+  './about.html',
   './offline.html',
   './style.css',
   './app.js',
+  './update-handler.js',
+  './share-handler.js',
   './cycletracker.json',
   './icons/circle.svg',
   './icons/tire.svg',
   './icons/wheel.svg',
   './favicon.ico',
+  './screenshots/main.png',
+  './screenshots/main-mobile.png',
+  './screenshots/about.png',
+  './screenshots/about-mobile.png'
 ];
 
 importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js'
 );
 
-// TODO: replace the following with the correct offline fallback page i.e.: const offlineFallbackPage = "offline.html";
 const offlineFallbackPage = 'offline.html';
 
+// Handle update notifications
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -41,14 +48,26 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Clean up old caches during activate
+// Notify clients about updates
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))
-      );
-    })
+    Promise.all([
+      // Clean up old caches
+      caches.keys().then((keys) => {
+        return Promise.all(
+          keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))
+        );
+      }),
+      // Notify all clients about the update
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: 'UPDATE_AVAILABLE',
+            message: 'A new version of Cycle Tracker is available!'
+          });
+        });
+      })
+    ])
   );
 });
 
