@@ -2,7 +2,8 @@
   "name": "cycleTracker: Period Tracking app",
   "short_name": "CyTck",
   "description": "Securely and confidentially track your menstrual cycle. Enter the start and end dates of your periods, saving your private data to your browser on your device, without sharing it with the rest of the world.",
-  "start_url": "/PWAsample",
+  "start_url": "/",
+  "scope": "/",
   "theme_color": "#eeffee",
   "background_color": "#eeffee",
   "display": "standalone",
@@ -11,7 +12,7 @@
       "name": "Home",
       "short_name": "Home",
       "description": "Go to the main period tracking page",
-      "url": "/PWAsample",
+      "url": "/",
       "icons": [{ "src": "icons/circle.svg", "sizes": "96x96" }]
     },
     {
